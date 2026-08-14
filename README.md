@@ -39,29 +39,65 @@ Supported statuses:
 
 Run the application from the project root directory.
 
-### Task Useable commands
+## Task Commands
 
+### Add a task
+
+```bash
 python -m src.main add "Buy groceries"
+```
 
+### Update a task
+
+```bash
 python -m src.main update 12 "Buy groceries and cook dinner"
+```
 
+### Delete a task
+
+```bash
 python -m src.main delete 12
+```
 
+### Delete a non-existing task
+
+```bash
 python -m src.main delete 112
+```
 
+### Mark a task as in-progress
+
+```bash
 python -m src.main mark-in-progress 12
+```
 
+### Mark a task as done
+
+```bash
 python -m src.main mark-done 12
+```
 
+### List all tasks
+
+```bash
 python -m src.main list
+```
 
+### List tasks by status
+
+```bash
 python -m src.main list todo
-python -m src.main list in-progress
-python -m src.main list done
 
+python -m src.main list in-progress
+
+python -m src.main list done
+```
+
+---
 
 ## Project Structure
 
+```text
 task-tracker/
 │
 ├── README.md
@@ -77,4 +113,5 @@ task-tracker/
 │
 └── tests/
     └── test_task_service.py
+```
 
