@@ -2,11 +2,23 @@ from datetime import datetime
 
 from src.storage import load_tasks, save_tasks
 
+VALID_STATUSES = [
+    "todo",
+    "in-progress",
+    "done"
+]
+
+
 def get_current_time():
     return datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
 
 def create_task(description):
+
+    description = description.strip()
+    if not description.strip():
+        raise ValueError("Description cannot be empty")
+    
     tasks = load_tasks()
 
     new_id = get_next_id(tasks)
@@ -28,6 +40,13 @@ def create_task(description):
 
 
 def get_next_id(tasks):
+    """
+    Generate the next available task ID.
+
+    Uses the maximum existing ID instead of the number of tasks
+    because tasks can be deleted.
+    """
+
     if not tasks:
         return 1
 
@@ -36,6 +55,10 @@ def get_next_id(tasks):
 
 def update_task(task_id, description):
     tasks = load_tasks()
+    description = description.strip()
+
+    if not description.strip():
+        raise ValueError("Description cannot be empty")
 
     for task in tasks:
         if task["id"] == int(task_id):
@@ -49,17 +72,46 @@ def update_task(task_id, description):
 
 
 def delete_task(task_id):
+    """
+    Delete a task by its ID.
+
+    Returns:
+        True if the task was deleted, otherwise False.
+    """    
+
     tasks = load_tasks()
 
-    updated_tasks = [
-        task for task in tasks
+    original_length = len(tasks)
+
+    tasks = [
+        task
+        for task in tasks
         if task["id"] != int(task_id)
     ]
 
-    save_tasks(updated_tasks)
+    if len(tasks) == original_length:
+        return False
+
+    save_tasks(tasks)
+    return True
 
 
 def change_status(task_id, status):
+    """
+    Update the status of a task.
+
+    Raises:
+        ValueError: If the provided status is not valid.
+    
+    Returns:
+        The updated task if found, otherwise None.
+    """    
+
+    if status not in VALID_STATUSES:
+        raise ValueError(
+            f"Invalid status. Choose one of: {VALID_STATUSES}"
+)
+
     tasks = load_tasks()
 
     for task in tasks:
@@ -74,6 +126,16 @@ def change_status(task_id, status):
 
 
 def get_tasks(status=None):
+    """
+    Retrieve tasks, optionally filtered by status.
+
+    Args:
+        status: Optional task status filter.
+
+    Returns:
+        A list of matching tasks.
+    """
+
     tasks = load_tasks()
 
     if status is None:

@@ -6,6 +6,7 @@ from src.task_service import (
     get_tasks,
 )
 
+ERROR_TASK_ID_REQUIRED = "Error: task id is required."
 
 def handle_add(arguments):
     if not arguments:
@@ -27,45 +28,57 @@ def handle_update(arguments):
     task_id = arguments[0]
     description = arguments[1]
 
-    update_task(task_id, description)
+    result = update_task(task_id, description)
 
-    print("Task updated successfully.")
+    if result:
+        print("Task updated successfully.")
+    else:
+        print("Error: Task not found.")
 
 
 def handle_delete(arguments):
     if not arguments:
-        print("Error: task id is required.")
+        print(ERROR_TASK_ID_REQUIRED)
         return
 
     task_id = arguments[0]
 
-    delete_task(task_id)
+    result = delete_task(task_id)
 
-    print("Task deleted successfully.")
+    if result:
+        print("Task deleted successfully.")
+    else:
+        print("Error: Task not found.")
 
 
 def handle_mark_in_progress(arguments):
     if not arguments:
-        print("Error: task id is required.")
+        print(ERROR_TASK_ID_REQUIRED)
         return
 
     task_id = arguments[0]
 
-    change_status(task_id, "in-progress")
+    task = change_status(task_id, "in-progress")
 
-    print("Task marked as in-progress.")
+    if task:
+        print("Task marked as in-progress.")
+    else:
+        print("Error: Task not found.")
 
 
 def handle_mark_done(arguments):
     if not arguments:
-        print("Error: task id is required.")
+        print(ERROR_TASK_ID_REQUIRED)
         return
 
     task_id = arguments[0]
 
-    change_status(task_id, "done")
+    task = change_status(task_id, "done")
 
-    print("Task marked as done.")
+    if task:
+        print("Task marked as done.")
+    else:
+        print("Error: Task not found.")
 
 
 def handle_list(arguments):
@@ -78,3 +91,34 @@ def handle_list(arguments):
 
     for task in tasks:
         print(task)
+
+
+def handle_command(command, arguments):
+    """
+    Dispatch a CLI command to its corresponding handler.
+
+    Args:
+        command: The command entered by the user.
+        arguments: Additional command-line arguments.
+    """    
+
+    if command == "add":
+        handle_add(arguments)
+
+    elif command == "update":
+        handle_update(arguments)
+
+    elif command == "delete":
+        handle_delete(arguments)
+
+    elif command == "mark-in-progress":
+        handle_mark_in_progress(arguments)
+
+    elif command == "mark-done":
+        handle_mark_done(arguments)
+
+    elif command == "list":
+        handle_list(arguments)
+
+    else:
+        print(f"Unknown command: {command}")        

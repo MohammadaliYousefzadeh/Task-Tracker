@@ -14,12 +14,16 @@ from src.task_service import (
 @pytest.fixture
 def test_file(tmp_path):
     """
-    Create isolated JSON file for every test.
+    Provide an isolated JSON file for each test.
+
+    The storage module is redirected to this file
+    to prevent tests from modifying real task data.
     """
 
     file = tmp_path / "tasks.json"
 
-    storage.TASKS_FILE = file
+    # Redirect storage to a temporary file so tests do not modify real data.
+    storage.TASKS_FILE = file  
 
     return file
 
@@ -53,12 +57,17 @@ def test_create_multiple_tasks(test_file):
     assert len(tasks) == 2
 
 
-def test_create_task_empty_description(test_file):
+def test_update_task_empty_description(test_file):
+
+    create_task("Homework")
 
     with pytest.raises(ValueError):
-        create_task("")
+        update_task(1, "")
 
+def test_create_task_whitespace_description(test_file):
 
+    with pytest.raises(ValueError):
+        create_task("     ")
 # -------------------------
 # Read/List tests
 # -------------------------
